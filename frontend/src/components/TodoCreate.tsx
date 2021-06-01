@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button, Icon, Input, Modal, Placeholder } from 'semantic-ui-react'
 import { Todo } from '../store/common'
 
-const TodoCreate = ({ createTodo, idToken }: any) => {
+const TodoCreate = ({ idToken, createTodo }: any) => {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
 
@@ -26,7 +26,7 @@ const TodoCreate = ({ createTodo, idToken }: any) => {
       done: false,
       attachmentUrl: undefined
     }
-    createTodo(todo, idToken)
+    createTodo(idToken, todo)
     setOpen(false)
   }
   return (
@@ -39,10 +39,10 @@ const TodoCreate = ({ createTodo, idToken }: any) => {
           <Icon name="pencil" />
           <Placeholder />
           <Placeholder />
-          Add TODO
+          Add Task
         </Button>
       }>
-      <Modal.Header>Add TODO</Modal.Header>
+      <Modal.Header>Add Task</Modal.Header>
       <Modal.Content image>
         <Icon name="add" circular inverted color="green" size="huge"/>
         <Modal.Description>

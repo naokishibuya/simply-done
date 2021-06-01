@@ -16,8 +16,9 @@ const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo}: any)
   useEffect(() => {
     (async () => {
       const idTokenClaims = await getIdTokenClaims()
-      setIdToken(idTokenClaims.__raw)
-      selectTodos(user?.email, idTokenClaims.__raw)
+      const token = idTokenClaims.__raw
+      setIdToken(token)
+      selectTodos(token)
     })()
   }, [user, selectTodos, setIdToken, getIdTokenClaims])
 
@@ -30,7 +31,7 @@ const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo}: any)
             <Header as="h1">Tasks for {user?.name}</Header>
           </Grid.Column>
           <Grid.Column width={2} floated="right">
-            <TodoCreate user={user?.email} createTodo={createTodo} idToken={idToken} />
+            <TodoCreate user={user?.email} idToken={idToken} createTodo={createTodo} />
           </Grid.Column>
         </Grid.Row>
       </Grid>
@@ -41,7 +42,7 @@ const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo}: any)
             <Grid.Row key={todo.todoId}>
               <Grid.Column width={1} verticalAlign="middle">
                 <Checkbox checked={todo.done} onChange={
-                  () => updateTodo({...todo, done: !todo.done}, idToken)}/>
+                  () => updateTodo(idToken, {...todo, done: !todo.done})}/>
               </Grid.Column>
               <Grid.Column width={8} verticalAlign="middle">
                 {todo.name}
@@ -53,10 +54,10 @@ const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo}: any)
                 {todo.dueDate}
               </Grid.Column>
               <Grid.Column width={1} floated="right">
-                <TodoUpdate todo={todo} updateTodo={updateTodo} idToken={idToken}/>
+                <TodoUpdate todo={todo} idToken={idToken} updateTodo={updateTodo} />
               </Grid.Column>
               <Grid.Column width={1} floated="right">
-                <TodoDelete todo={todo} deleteTodo={deleteTodo} idToken={idToken} />
+                <TodoDelete todo={todo} idToken={idToken} deleteTodo={deleteTodo} />
               </Grid.Column>
               <Grid.Column width={16}>
                 <Divider />

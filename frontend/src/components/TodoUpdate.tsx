@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, Checkbox, Grid, Icon, Input, Modal } from 'semantic-ui-react'
 
-const TodoUpdate = ({ todo, updateTodo, idToken }: any) => {
+const TodoUpdate = ({ idToken, todo, updateTodo }: any) => {
   const [open, setOpen] = useState(false)
   const [done, setDone] = useState(false)
   const [name, setName] = useState('')
@@ -13,7 +13,7 @@ const TodoUpdate = ({ todo, updateTodo, idToken }: any) => {
   }
 
   const handleUpdate = () => {
-    updateTodo({...todo, name: name, done: done}, idToken)
+    updateTodo(idToken, {...todo, name: name, done: done})
     setOpen(false)
   }
 

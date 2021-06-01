@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 
-const TodoDelete = ({ todo, deleteTodo, idToken }: any) => {
+const TodoDelete = ({ idToken, todo, deleteTodo }: any) => {
   const [open, setOpen] = useState(false)
 
   return (
@@ -32,7 +32,7 @@ const TodoDelete = ({ todo, deleteTodo, idToken }: any) => {
         content="Yep"
         labelPosition='right'
         icon='checkmark'
-        onClick={() => deleteTodo(todo, idToken)}
+        onClick={() => deleteTodo(idToken, todo)}
         positive
       />
     </Modal.Actions>

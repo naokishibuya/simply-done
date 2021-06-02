@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk'
-import { assert } from 'console';
 import * as uuid from 'uuid'
+import dateformat from 'dateformat'
 import { TodoItem } from './businessLogic'
 
 const TABLE_NAME = process.env.TABLE_NAME || '';
@@ -26,7 +26,7 @@ export const getAllTodos = async (userId: string): Promise<TodoItem[]> => {
 
 export const createTodo = async (userId: string, todo: TodoItem) => {
   const todoId =  uuid.v4()
-  const createdAt = new Date().toISOString()
+  const createdAt = dateformat(new Date(), 'yyyy-dd-mm')
   const newItem = {...todo, userId, todoId, createdAt }
   await docClient.put({
     TableName: TABLE_NAME,

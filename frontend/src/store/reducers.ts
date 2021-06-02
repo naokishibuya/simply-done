@@ -2,21 +2,21 @@ import { Reducer } from 'redux'
 import { TodosActionTypes, TodoAction, Todo } from './common'
 
 export const todosReducer: Reducer<Todo[], TodoAction> = (todos = [], action) => {
+  if (action.type===TodosActionTypes.SELECT) {
+    return action.todos
+  }
+  if (!action.todos) {
+    return todos
+  }
+  const affected = action.todos[0]
   switch (action.type) {
-    case TodosActionTypes.SELECT:
-      return action.todos
     case TodosActionTypes.CREATE:
-      return [...todos, action.todos[0]]
+      return [...todos, affected]
     case TodosActionTypes.UPDATE:
-      return todos.map(todo => {
-        if (todo.todoId === action.todos[0].todoId) {
-          return action.todos[0]
-        }
-        return todo
-      })
+      return todos.map(todo => (todo.todoId === affected.todoId) ? affected : todo)
     case TodosActionTypes.DELETE:
-      return todos.filter(todo => todo.todoId !== action.todos[0].todoId)
+      return todos.filter(todo => todo.todoId !== affected.todoId)
     default:
-      return todos;
+      return todos
   }
 }

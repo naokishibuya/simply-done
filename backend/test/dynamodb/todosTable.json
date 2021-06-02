@@ -1,0 +1,50 @@
+{
+  "TableName": "TodosTable-local",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "todoId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "createdAt",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+        "AttributeName": "userId",
+        "KeyType": "HASH"
+    },
+    {
+        "AttributeName": "todoId",
+        "KeyType": "RANGE"
+    }
+  ],
+  "BillingMode": "PAY_PER_REQUEST",
+  "LocalSecondaryIndexes": [
+    {
+      "IndexName": "TodosIndex",
+      "KeySchema": [
+        {
+            "AttributeName": "userId",
+            "KeyType": "HASH"
+        },
+        {
+            "AttributeName": "createdAt",
+            "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }  
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 1,
+    "WriteCapacityUnits": 1
+  }
+}

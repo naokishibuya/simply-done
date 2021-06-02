@@ -1,0 +1,1019 @@
+Resources:
+  TodosTable250330D8:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: todoId
+          KeyType: RANGE
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: todoId
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      TableName: TodosTable-local
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: BackendStack/TodosTable/Resource
+  CorsOptionsServiceRoleBEEB7A51:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BackendStack/CorsOptions/ServiceRole/Resource
+  CorsOptions0290EA6C:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65S3Bucket99DAFBAE
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65S3VersionKeyEB3E9161
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65S3VersionKeyEB3E9161
+      Role:
+        Fn::GetAtt:
+          - CorsOptionsServiceRoleBEEB7A51
+          - Arn
+      Environment:
+        Variables:
+          STAGE: local
+          TABLE_NAME: TodosTable-local
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      Timeout: 60
+    DependsOn:
+      - CorsOptionsServiceRoleBEEB7A51
+    Metadata:
+      aws:cdk:path: BackendStack/CorsOptions/Resource
+      aws:asset:path: /Users/naoki/workspace/udacity/simply-done/backend/cdk.out/asset.2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65
+      aws:asset:property: Code
+  GetTodosServiceRole0E92CF0F:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BackendStack/GetTodos/ServiceRole/Resource
+  GetTodosServiceRoleDefaultPolicy197A5DAF:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+              - dynamodb:Query
+              - dynamodb:GetItem
+              - dynamodb:Scan
+              - dynamodb:ConditionCheckItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - TodosTable250330D8
+                  - Arn
+              - Ref: AWS::NoValue
+        Version: "2012-10-17"
+      PolicyName: GetTodosServiceRoleDefaultPolicy197A5DAF
+      Roles:
+        - Ref: GetTodosServiceRole0E92CF0F
+    Metadata:
+      aws:cdk:path: BackendStack/GetTodos/ServiceRole/DefaultPolicy/Resource
+  GetTodosB3CCFF10:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196S3Bucket7F9909DD
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196S3VersionKey87D78DCD
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196S3VersionKey87D78DCD
+      Role:
+        Fn::GetAtt:
+          - GetTodosServiceRole0E92CF0F
+          - Arn
+      Environment:
+        Variables:
+          STAGE: local
+          TABLE_NAME: TodosTable-local
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      Timeout: 60
+    DependsOn:
+      - GetTodosServiceRoleDefaultPolicy197A5DAF
+      - GetTodosServiceRole0E92CF0F
+    Metadata:
+      aws:cdk:path: BackendStack/GetTodos/Resource
+      aws:asset:path: /Users/naoki/workspace/udacity/simply-done/backend/cdk.out/asset.0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196
+      aws:asset:property: Code
+  CreateTodoServiceRoleE5D2208A:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BackendStack/CreateTodo/ServiceRole/Resource
+  CreateTodoServiceRoleDefaultPolicy99B0D98A:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+              - dynamodb:Query
+              - dynamodb:GetItem
+              - dynamodb:Scan
+              - dynamodb:ConditionCheckItem
+              - dynamodb:BatchWriteItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - TodosTable250330D8
+                  - Arn
+              - Ref: AWS::NoValue
+        Version: "2012-10-17"
+      PolicyName: CreateTodoServiceRoleDefaultPolicy99B0D98A
+      Roles:
+        - Ref: CreateTodoServiceRoleE5D2208A
+    Metadata:
+      aws:cdk:path: BackendStack/CreateTodo/ServiceRole/DefaultPolicy/Resource
+  CreateTodo56410671:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParametersbb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240S3BucketD35BA860
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParametersbb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240S3VersionKey55477B04
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParametersbb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240S3VersionKey55477B04
+      Role:
+        Fn::GetAtt:
+          - CreateTodoServiceRoleE5D2208A
+          - Arn
+      Environment:
+        Variables:
+          STAGE: local
+          TABLE_NAME: TodosTable-local
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      Timeout: 60
+    DependsOn:
+      - CreateTodoServiceRoleDefaultPolicy99B0D98A
+      - CreateTodoServiceRoleE5D2208A
+    Metadata:
+      aws:cdk:path: BackendStack/CreateTodo/Resource
+      aws:asset:path: /Users/naoki/workspace/udacity/simply-done/backend/cdk.out/asset.bb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240
+      aws:asset:property: Code
+  UpdateTodoServiceRoleC5ED113D:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BackendStack/UpdateTodo/ServiceRole/Resource
+  UpdateTodoE5FA5333:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameterse21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795S3Bucket95769043
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameterse21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795S3VersionKey3AA1FADC
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameterse21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795S3VersionKey3AA1FADC
+      Role:
+        Fn::GetAtt:
+          - UpdateTodoServiceRoleC5ED113D
+          - Arn
+      Environment:
+        Variables:
+          STAGE: local
+          TABLE_NAME: TodosTable-local
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      Timeout: 60
+    DependsOn:
+      - UpdateTodoServiceRoleC5ED113D
+    Metadata:
+      aws:cdk:path: BackendStack/UpdateTodo/Resource
+      aws:asset:path: /Users/naoki/workspace/udacity/simply-done/backend/cdk.out/asset.e21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795
+      aws:asset:property: Code
+  DeleteTodoServiceRoleD6A5BBE6:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BackendStack/DeleteTodo/ServiceRole/Resource
+  DeleteTodo83B93704:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cdS3BucketB8FCFB87
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cdS3VersionKey228DEB11
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cdS3VersionKey228DEB11
+      Role:
+        Fn::GetAtt:
+          - DeleteTodoServiceRoleD6A5BBE6
+          - Arn
+      Environment:
+        Variables:
+          STAGE: local
+          TABLE_NAME: TodosTable-local
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      Timeout: 60
+    DependsOn:
+      - DeleteTodoServiceRoleD6A5BBE6
+    Metadata:
+      aws:cdk:path: BackendStack/DeleteTodo/Resource
+      aws:asset:path: /Users/naoki/workspace/udacity/simply-done/backend/cdk.out/asset.505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cd
+      aws:asset:property: Code
+  TodoApi145E2E30:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: todoApi
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Resource
+  TodoApiCloudWatchRoleE8187653:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/CloudWatchRole/Resource
+  TodoApiAccount82C4A65C:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn:
+        Fn::GetAtt:
+          - TodoApiCloudWatchRoleE8187653
+          - Arn
+    DependsOn:
+      - TodoApi145E2E30
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Account
+  TodoApiDeployment88898756fd7efc5a1b65a44b85aff544118da7bc:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId:
+        Ref: TodoApi145E2E30
+      Description: Automatically created by the RestApi construct
+    DependsOn:
+      - TodoApitodostodoIdDELETE3B02BD45
+      - TodoApitodostodoIdOPTIONS71FAA8AF
+      - TodoApitodostodoIdB045D1F1
+      - TodoApitodosGETE281246C
+      - TodoApitodosOPTIONS727FF6AA
+      - TodoApitodosPATCH958BFD21
+      - TodoApitodosPOSTE91981ED
+      - TodoApitodos175F9392
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Deployment/Resource
+  TodoApiDeploymentStageprod8FC2974F:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId:
+        Ref: TodoApi145E2E30
+      DeploymentId:
+        Ref: TodoApiDeployment88898756fd7efc5a1b65a44b85aff544118da7bc
+      StageName: prod
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/DeploymentStage.prod/Resource
+  TodoApitodos175F9392:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Fn::GetAtt:
+          - TodoApi145E2E30
+          - RootResourceId
+      PathPart: todos
+      RestApiId:
+        Ref: TodoApi145E2E30
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/Resource
+  TodoApitodosOPTIONSApiPermissionBackendStackTodoApiB26EFC66OPTIONStodos2E255091:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - CorsOptions0290EA6C
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /
+            - Ref: TodoApiDeploymentStageprod8FC2974F
+            - /OPTIONS/todos
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/OPTIONS/ApiPermission.BackendStackTodoApiB26EFC66.OPTIONS..todos
+  TodoApitodosOPTIONSApiPermissionTestBackendStackTodoApiB26EFC66OPTIONStodosB8059B2B:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - CorsOptions0290EA6C
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /test-invoke-stage/OPTIONS/todos
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/OPTIONS/ApiPermission.Test.BackendStackTodoApiB26EFC66.OPTIONS..todos
+  TodoApitodosOPTIONS727FF6AA:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: OPTIONS
+      ResourceId:
+        Ref: TodoApitodos175F9392
+      RestApiId:
+        Ref: TodoApi145E2E30
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - CorsOptions0290EA6C
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/OPTIONS/Resource
+  TodoApitodosGETApiPermissionBackendStackTodoApiB26EFC66GETtodosB7C071F1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GetTodosB3CCFF10
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /
+            - Ref: TodoApiDeploymentStageprod8FC2974F
+            - /GET/todos
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/GET/ApiPermission.BackendStackTodoApiB26EFC66.GET..todos
+  TodoApitodosGETApiPermissionTestBackendStackTodoApiB26EFC66GETtodos7E669FFF:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - GetTodosB3CCFF10
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /test-invoke-stage/GET/todos
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/GET/ApiPermission.Test.BackendStackTodoApiB26EFC66.GET..todos
+  TodoApitodosGETE281246C:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId:
+        Ref: TodoApitodos175F9392
+      RestApiId:
+        Ref: TodoApi145E2E30
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - GetTodosB3CCFF10
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/GET/Resource
+  TodoApitodosPOSTApiPermissionBackendStackTodoApiB26EFC66POSTtodos75E31C6C:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - CreateTodo56410671
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /
+            - Ref: TodoApiDeploymentStageprod8FC2974F
+            - /POST/todos
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/POST/ApiPermission.BackendStackTodoApiB26EFC66.POST..todos
+  TodoApitodosPOSTApiPermissionTestBackendStackTodoApiB26EFC66POSTtodosC11CCB1E:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - CreateTodo56410671
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /test-invoke-stage/POST/todos
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/POST/ApiPermission.Test.BackendStackTodoApiB26EFC66.POST..todos
+  TodoApitodosPOSTE91981ED:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: POST
+      ResourceId:
+        Ref: TodoApitodos175F9392
+      RestApiId:
+        Ref: TodoApi145E2E30
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - CreateTodo56410671
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/POST/Resource
+  TodoApitodosPATCHApiPermissionBackendStackTodoApiB26EFC66PATCHtodos74691D50:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - UpdateTodoE5FA5333
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /
+            - Ref: TodoApiDeploymentStageprod8FC2974F
+            - /PATCH/todos
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/PATCH/ApiPermission.BackendStackTodoApiB26EFC66.PATCH..todos
+  TodoApitodosPATCHApiPermissionTestBackendStackTodoApiB26EFC66PATCHtodos1E4B7F2A:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - UpdateTodoE5FA5333
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /test-invoke-stage/PATCH/todos
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/PATCH/ApiPermission.Test.BackendStackTodoApiB26EFC66.PATCH..todos
+  TodoApitodosPATCH958BFD21:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: PATCH
+      ResourceId:
+        Ref: TodoApitodos175F9392
+      RestApiId:
+        Ref: TodoApi145E2E30
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - UpdateTodoE5FA5333
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/PATCH/Resource
+  TodoApitodostodoIdB045D1F1:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: TodoApitodos175F9392
+      PathPart: "{todoId}"
+      RestApiId:
+        Ref: TodoApi145E2E30
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/{todoId}/Resource
+  TodoApitodostodoIdOPTIONSApiPermissionBackendStackTodoApiB26EFC66OPTIONStodostodoIdCEF57AE1:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - CorsOptions0290EA6C
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /
+            - Ref: TodoApiDeploymentStageprod8FC2974F
+            - /OPTIONS/todos/*
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/{todoId}/OPTIONS/ApiPermission.BackendStackTodoApiB26EFC66.OPTIONS..todos.{todoId}
+  TodoApitodostodoIdOPTIONSApiPermissionTestBackendStackTodoApiB26EFC66OPTIONStodostodoId00C88C03:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - CorsOptions0290EA6C
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /test-invoke-stage/OPTIONS/todos/*
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/{todoId}/OPTIONS/ApiPermission.Test.BackendStackTodoApiB26EFC66.OPTIONS..todos.{todoId}
+  TodoApitodostodoIdOPTIONS71FAA8AF:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: OPTIONS
+      ResourceId:
+        Ref: TodoApitodostodoIdB045D1F1
+      RestApiId:
+        Ref: TodoApi145E2E30
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - CorsOptions0290EA6C
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/{todoId}/OPTIONS/Resource
+  TodoApitodostodoIdDELETEApiPermissionBackendStackTodoApiB26EFC66DELETEtodostodoId51571B10:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - DeleteTodo83B93704
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /
+            - Ref: TodoApiDeploymentStageprod8FC2974F
+            - /DELETE/todos/*
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/{todoId}/DELETE/ApiPermission.BackendStackTodoApiB26EFC66.DELETE..todos.{todoId}
+  TodoApitodostodoIdDELETEApiPermissionTestBackendStackTodoApiB26EFC66DELETEtodostodoId3B7B91DB:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - DeleteTodo83B93704
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Join:
+          - ""
+          - - "arn:"
+            - Ref: AWS::Partition
+            - ":execute-api:"
+            - Ref: AWS::Region
+            - ":"
+            - Ref: AWS::AccountId
+            - ":"
+            - Ref: TodoApi145E2E30
+            - /test-invoke-stage/DELETE/todos/*
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/{todoId}/DELETE/ApiPermission.Test.BackendStackTodoApiB26EFC66.DELETE..todos.{todoId}
+  TodoApitodostodoIdDELETE3B02BD45:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: DELETE
+      ResourceId:
+        Ref: TodoApitodostodoIdB045D1F1
+      RestApiId:
+        Ref: TodoApi145E2E30
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - ":apigateway:"
+              - Ref: AWS::Region
+              - :lambda:path/2015-03-31/functions/
+              - Fn::GetAtt:
+                  - DeleteTodo83B93704
+                  - Arn
+              - /invocations
+    Metadata:
+      aws:cdk:path: BackendStack/TodoApi/Default/todos/{todoId}/DELETE/Resource
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAAE1VRwU7DMAz9Fu5pRgXiTBnaDZgKP+AmZqRrkipOmKoo/06SbgNOfrae7ffslre3D7y9eYQTNUIeN1FYhzy+exBH1iPZ4ASyjgh9rh2UObCtNeRdEJ5tP80eHGj06EryFvwcavnamXHmS+WVNYmVLVEuBrSVA48fMEyVUkFiE+hBQmOsxJH4aw27YERpZgo0j71dG2rc20mJpaqoKDG6a6BIJV4VnwfymCnXOYWOTiuiVdKsDuDxBEuejuS7WZ0NXGAnhA3Gs2ecJ7toNNXhn6wcpqpawcX7E9Bv8u8oL+i/rCylFaWUWDHNR9p8t/e8LS8ZSanG5cVKI+/X+ANeVvdPrwEAAA==
+    Metadata:
+      aws:cdk:path: BackendStack/CDKMetadata/Default
+    Condition: CDKMetadataAvailable
+Parameters:
+  AssetParameters2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65S3Bucket99DAFBAE:
+    Type: String
+    Description: S3 bucket for asset "2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65"
+  AssetParameters2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65S3VersionKeyEB3E9161:
+    Type: String
+    Description: S3 key for asset version "2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65"
+  AssetParameters2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65ArtifactHash44F1027B:
+    Type: String
+    Description: Artifact hash for asset "2f827c4243ca8ae0ee3127a2c239175e93beb9dbd5bc3c62a64975b9f4f81c65"
+  AssetParameters0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196S3Bucket7F9909DD:
+    Type: String
+    Description: S3 bucket for asset "0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196"
+  AssetParameters0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196S3VersionKey87D78DCD:
+    Type: String
+    Description: S3 key for asset version "0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196"
+  AssetParameters0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196ArtifactHash5EE3BFAA:
+    Type: String
+    Description: Artifact hash for asset "0b88733e9783084acecefa4c54a0f69e60f7a160abd590e2995ee5c4cbda8196"
+  AssetParametersbb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240S3BucketD35BA860:
+    Type: String
+    Description: S3 bucket for asset "bb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240"
+  AssetParametersbb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240S3VersionKey55477B04:
+    Type: String
+    Description: S3 key for asset version "bb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240"
+  AssetParametersbb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240ArtifactHash83DA57C7:
+    Type: String
+    Description: Artifact hash for asset "bb0f69b8cd8d1ca5d234ac311fd2a5f34b649e27b0a211fa2ef4f60f6d62c240"
+  AssetParameterse21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795S3Bucket95769043:
+    Type: String
+    Description: S3 bucket for asset "e21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795"
+  AssetParameterse21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795S3VersionKey3AA1FADC:
+    Type: String
+    Description: S3 key for asset version "e21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795"
+  AssetParameterse21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795ArtifactHash95B92025:
+    Type: String
+    Description: Artifact hash for asset "e21ba0724955e914827cfd0a983192f39f106266366928fe38dd3d32b0d41795"
+  AssetParameters505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cdS3BucketB8FCFB87:
+    Type: String
+    Description: S3 bucket for asset "505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cd"
+  AssetParameters505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cdS3VersionKey228DEB11:
+    Type: String
+    Description: S3 key for asset version "505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cd"
+  AssetParameters505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cdArtifactHash9883BB2A:
+    Type: String
+    Description: Artifact hash for asset "505cb7063969d251e621c85e66c28f0712442bf663cb2cadba26c116a2eb81cd"
+Outputs:
+  TodoApiEndpointC1E16B6C:
+    Value:
+      Fn::Join:
+        - ""
+        - - https://
+          - Ref: TodoApi145E2E30
+          - .execute-api.
+          - Ref: AWS::Region
+          - "."
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: TodoApiDeploymentStageprod8FC2974F
+          - /
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - af-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+

@@ -3,6 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs'
 import * as apigateway from '@aws-cdk/aws-apigateway'
 import * as dynamodb from '@aws-cdk/aws-dynamodb'
+import todoRequest from '../models/todoRequest'
 
 export class BackendStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -85,11 +86,36 @@ export class BackendStack extends cdk.Stack {
       }
     })
 
+    const requestValidator = todoApi.addRequestValidator("TodoRequestValidator", {
+      requestValidatorName: "todo-request-validator",
+      validateRequestBody: true
+    })
+    const requestModel = todoApi.addModel("TodoRequestModel", {
+      contentType: "application/json",
+      schema: todoRequest
+    })
+
+    todoApi.addGatewayResponse("TodoGatewayResponse", {
+      type: apigateway.ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+        "gatewayresponse.header.Access-Control-Allow-Headers":
+          "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "gatewayresponse.header.Access-Control-Allow-Methods": "'*'",
+      }
+    })
+
     const todos = todoApi.root.addResource("todos")
     todos.addMethod("OPTIONS", new apigateway.LambdaIntegration(corsOptions))
     todos.addMethod("GET", new apigateway.LambdaIntegration(getTodos))
-    todos.addMethod("POST", new apigateway.LambdaIntegration(createTodo))
-    todos.addMethod("PATCH", new apigateway.LambdaIntegration(updateTodo))
+    todos.addMethod("POST", new apigateway.LambdaIntegration(createTodo), {
+      requestValidator: requestValidator,
+      requestModels: { "application/json": requestModel }
+    })
+    todos.addMethod("PATCH", new apigateway.LambdaIntegration(updateTodo), {
+      requestValidator: requestValidator,
+      requestModels: { "application/json": requestModel }
+    })
 
     const todo = todos.addResource('{todoId}')
     todo.addMethod("OPTIONS", new apigateway.LambdaIntegration(corsOptions))

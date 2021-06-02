@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button, Icon, Input, Modal, Placeholder } from 'semantic-ui-react'
+import dateformat from 'dateformat'
 import { Todo } from '../store/common'
 
 const TodoCreate = ({ idToken, createTodo }: any) => {
@@ -15,7 +16,7 @@ const TodoCreate = ({ idToken, createTodo }: any) => {
     const dateString = (addDays: number) => {
       const date = new Date()
       date.setDate(date.getDate() + addDays)
-      return date.toISOString()
+      return dateformat(date, 'yyyy-mm-dd')
     }
 
     const todo: Todo = {

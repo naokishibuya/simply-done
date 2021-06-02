@@ -9,48 +9,38 @@ const makeHeaders = (idToken: string) => {
   }}
 }
 
+const makeAction = (type: TodosActionTypes, todos: Todo[], error?: any) => {
+  const action: TodoAction = {
+    type: type,
+    todos: todos
+  }
+  return action
+}
+
 export const selectTodos = (idToken: string) => {
   return async (dispatch: Dispatch) => {
     const response = await todos.get(`/todos`, makeHeaders(idToken))
-    const action: TodoAction = {
-      type: TodosActionTypes.SELECT,
-      todos: response.data
-    }
-    return dispatch(action)
-  };
-};
+    return dispatch(makeAction(TodosActionTypes.SELECT, response.data))
+  }
+}
 
 export const createTodo = (idToken: string, todo: Todo) => {
   return async (dispatch: Dispatch) => {
-    const response = await todos.post('/todos',
-      JSON.stringify(todo), makeHeaders(idToken))
-    const action: TodoAction = {
-      type: TodosActionTypes.CREATE,
-      todos: [response.data]
-    }
-    return dispatch(action)
+    const response = await todos.post('/todos', JSON.stringify(todo), makeHeaders(idToken))
+    return dispatch(makeAction(TodosActionTypes.CREATE, [response.data]))
   }
 }
 
 export const updateTodo = (idToken: string, todo: Todo) => {
   return async (dispatch: Dispatch) => {
-    const response = await todos.patch('/todos/',
-      JSON.stringify(todo), makeHeaders(idToken))
-    const action: TodoAction = {
-      type: TodosActionTypes.UPDATE,
-      todos: [response.data]
-    }
-    return dispatch(action)
+    const response = await todos.patch('/todos/', JSON.stringify(todo), makeHeaders(idToken))
+    return dispatch(makeAction(TodosActionTypes.UPDATE, [response.data]))
   }
 }
 
 export const deleteTodo = (idToken: string, todo: Todo) => {
   return async (dispatch: Dispatch) => {
     await todos.delete(`/todos/${todo.todoId}`, makeHeaders(idToken))
-    const action: TodoAction = {
-      type: TodosActionTypes.DELETE,
-      todos: [todo]
-    }
-    return dispatch(action)
+    return dispatch(makeAction(TodosActionTypes.DELETE, [todo]))
   }
 }

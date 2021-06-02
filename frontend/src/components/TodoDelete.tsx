@@ -4,6 +4,11 @@ import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 const TodoDelete = ({ idToken, todo, deleteTodo }: any) => {
   const [open, setOpen] = useState(false)
 
+  const handleDelete = () => {
+    deleteTodo(idToken, todo)
+    setOpen(false)
+  }
+
   return (
     <Modal
       onClose={() => setOpen(false)}
@@ -32,7 +37,7 @@ const TodoDelete = ({ idToken, todo, deleteTodo }: any) => {
         content="Yep"
         labelPosition='right'
         icon='checkmark'
-        onClick={() => deleteTodo(idToken, todo)}
+        onClick={handleDelete}
         positive
       />
     </Modal.Actions>

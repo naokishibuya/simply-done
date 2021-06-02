@@ -18,7 +18,7 @@ export class BackendStack extends cdk.Stack {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       partitionKey: { name: "userId", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "todoId", type: dynamodb.AttributeType.STRING }
-    });
+    })
 
     // Lambda
     const corsOptions = new NodejsFunction(this, "CorsOptions", {
@@ -29,7 +29,7 @@ export class BackendStack extends cdk.Stack {
         STAGE: stage,
         TABLE_NAME: tableName
       }
-    });
+    })
 
     const getTodos = new NodejsFunction(this, "GetTodos", {
       runtime: lambda.Runtime.NODEJS_14_X,
@@ -39,7 +39,7 @@ export class BackendStack extends cdk.Stack {
         STAGE: stage,
         TABLE_NAME: tableName
       }
-    });
+    })
     todosTable.grantReadData(getTodos);
 
     const createTodo = new NodejsFunction(this, "CreateTodo", {
@@ -50,7 +50,7 @@ export class BackendStack extends cdk.Stack {
         STAGE: stage,
         TABLE_NAME: tableName
       }
-    });
+    })
     todosTable.grantReadWriteData(createTodo);
 
     const updateTodo = new NodejsFunction(this, "UpdateTodo", {
@@ -61,8 +61,8 @@ export class BackendStack extends cdk.Stack {
         STAGE: stage,
         TABLE_NAME: tableName
       }
-    });
-    todosTable.grantReadWriteData(createTodo);
+    })
+    todosTable.grantReadWriteData(updateTodo);
 
     const deleteTodo = new NodejsFunction(this, "DeleteTodo", {
       runtime: lambda.Runtime.NODEJS_14_X,
@@ -72,13 +72,18 @@ export class BackendStack extends cdk.Stack {
         STAGE: stage,
         TABLE_NAME: tableName
       }
-    });
-    todosTable.grantReadWriteData(createTodo);
+    })
+    todosTable.grantReadWriteData(deleteTodo);
 
     // API Gateway
     const todoApi = new apigateway.RestApi(this, "TodoApi", {
-      restApiName: "todoApi"
-    });
+      restApiName: "todoApi",
+      deployOptions: {
+        stageName: stage,
+        tracingEnabled: true,
+        metricsEnabled: true
+      }
+    })
 
     const todos = todoApi.root.addResource("todos")
     todos.addMethod("OPTIONS", new apigateway.LambdaIntegration(corsOptions))

@@ -22,7 +22,8 @@ export const selectTodos = (idToken: string) => {
 
 export const createTodo = (idToken: string, todo: Todo) => {
   return async (dispatch: Dispatch) => {
-    const response = await todos.post('/todos', todo, makeHeaders(idToken))
+    const response = await todos.post('/todos',
+      JSON.stringify(todo), makeHeaders(idToken))
     const action: TodoAction = {
       type: TodosActionTypes.CREATE,
       todos: [response.data]
@@ -33,7 +34,8 @@ export const createTodo = (idToken: string, todo: Todo) => {
 
 export const updateTodo = (idToken: string, todo: Todo) => {
   return async (dispatch: Dispatch) => {
-    const response = await todos.patch('/todos/', todo, makeHeaders(idToken))
+    const response = await todos.patch('/todos/',
+      JSON.stringify(todo), makeHeaders(idToken))
     const action: TodoAction = {
       type: TodosActionTypes.UPDATE,
       todos: [response.data]

@@ -61,7 +61,7 @@ export const uploadImage = (idToken: string, todo: Todo, imagePath: string) => {
   return async (dispatch: Dispatch) => {
     try {
       const response = await todoApi.post(`/todos/${todo.todoId}/attachment`, '', makeHeaders(idToken))
-      const attachmentUrl = response.data.preSignedUrl
+      const attachmentUrl = response.data.uploadUrl
       await s3.put(attachmentUrl, imagePath)
       return dispatch(makeAction(TodosActionTypes.UPLOAD, [{...todo, attachmentUrl}]))
     } catch (error) {

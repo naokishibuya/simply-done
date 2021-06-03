@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Checkbox, Divider, Grid, Header, Message } from 'semantic-ui-react'
+import { Checkbox, Divider, Grid, Header, Image, Message } from 'semantic-ui-react'
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from './Loading'
 import { selectTodos, createTodo, updateTodo, deleteTodo, uploadImage } from '../store/actions'
@@ -51,6 +51,7 @@ const TodoRow = ({idToken, todo, updateTodo, deleteTodo, uploadImage}: any) => {
       <Grid.Column width={1} floated="right">
         <TodoDelete idToken={idToken} todo={todo} deleteTodo={deleteTodo} />
       </Grid.Column>
+      {todo.attachmentUrl && <Image src={todo.attachmentUrl} size="small" wrapped />}
       <Grid.Column width={16}>
         <Divider />
       </Grid.Column>

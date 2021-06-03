@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Form, Header, Icon, Input, Label, Modal } from 'semantic-ui-react'
+import { Button, Form, Header, Icon, Input, Modal } from 'semantic-ui-react'
 
 const TodoImage = ({ idToken, todo, uploadImage }: any) => {
   const [open, setOpen] = useState(false)

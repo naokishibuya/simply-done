@@ -1,5 +1,6 @@
 // TODO: Once your application is deployed, copy an API id here so that the frontend could interact with it
-export const apiEndpoint = 'http://localhost:3001'
+export const apiEndpoint = 'https://eluzrvn1ng.execute-api.us-east-1.amazonaws.com/test/'
+//export const apiEndpoint = 'http://localhost:3001'
 
 export const authConfig = {
   // TODO: Create an Auth0 application and copy values from it into this map

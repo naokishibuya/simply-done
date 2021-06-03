@@ -51,7 +51,9 @@ const TodoRow = ({idToken, todo, updateTodo, deleteTodo, uploadImage}: any) => {
       <Grid.Column width={1} floated="right">
         <TodoDelete idToken={idToken} todo={todo} deleteTodo={deleteTodo} />
       </Grid.Column>
+      <div style={{marginLeft: '50px'}}>
       {todo.attachmentUrl && <Image src={todo.attachmentUrl} size="small" wrapped />}
+      </div>
       <Grid.Column width={16}>
         <Divider />
       </Grid.Column>

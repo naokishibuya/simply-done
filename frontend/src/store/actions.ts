@@ -57,12 +57,12 @@ export const deleteTodo = (idToken: string, todo: Todo) => {
   }
 }
 
-export const uploadImage = (idToken: string, todo: Todo, imagePath: string) => {
+export const uploadImage = (idToken: string, todo: Todo, file: File) => {
   return async (dispatch: Dispatch) => {
     try {
       const response = await todoApi.post(`/todos/${todo.todoId}/attachment`, '', makeHeaders(idToken))
-      const attachmentUrl = response.data.uploadUrl
-      await s3.put(attachmentUrl, imagePath)
+      const { signedUrl, attachmentUrl } = response.data
+      await s3.put(signedUrl, file)
       return dispatch(makeAction(TodosActionTypes.UPLOAD, [{...todo, attachmentUrl}]))
     } catch (error) {
       return dispatch(makeAction(TodosActionTypes.UPLOAD, [], error))

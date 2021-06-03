@@ -3,18 +3,18 @@ import { Button, Form, Header, Icon, Input, Modal } from 'semantic-ui-react'
 
 const TodoImage = ({ idToken, todo, uploadImage }: any) => {
   const [open, setOpen] = useState(false)
-  const [uploadFile, setUploadFile] = useState('')
+  const [uploadFile, setUploadFile] = useState<File>()
   
   const clear = (open: boolean) => {
     setOpen(open)
-    setUploadFile('')
+    setUploadFile(undefined)
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
 
     if (e.target.files) {
-      setUploadFile(e.target.files[0].name)
+      setUploadFile(e.target.files[0])
     }
   }
 

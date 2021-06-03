@@ -18,8 +18,10 @@ export enum TodosActionTypes {
 export interface TodoAction {
   type: TodosActionTypes
   todos: Todo[]
+  error?: Error
 }
 
 export type AppState = {
   todos: Todo[]
+  error: string
 }

@@ -2,11 +2,11 @@ import { Reducer } from 'redux'
 import { TodosActionTypes, TodoAction, Todo } from './common'
 
 export const todosReducer: Reducer<Todo[], TodoAction> = (todos = [], action) => {
+  if (action.error || !action.todos) {
+    return todos
+  }
   if (action.type===TodosActionTypes.SELECT) {
     return action.todos
-  }
-  if (!action.todos) {
-    return todos
   }
   const affected = action.todos[0]
   switch (action.type) {
@@ -19,4 +19,12 @@ export const todosReducer: Reducer<Todo[], TodoAction> = (todos = [], action) =>
     default:
       return todos
   }
+}
+
+export const errorReducer: Reducer<string, TodoAction> = (error = '', action) => {
+  if (action.error) {
+    console.log('EEEEEE')
+    return `${action.type} failed: ${action.error}`
+  }
+  return ''
 }

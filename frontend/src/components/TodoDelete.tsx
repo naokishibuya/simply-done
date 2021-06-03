@@ -30,7 +30,7 @@ const TodoDelete = ({ idToken, todo, deleteTodo }: any) => {
       </Modal.Description>
     </Modal.Content>
     <Modal.Actions>
-      <Button color="black" onClick={() => setOpen(false)}>
+      <Button color="black" autoFocus onClick={() => setOpen(false)}>
         Nope
       </Button>
       <Button

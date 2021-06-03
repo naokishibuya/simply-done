@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import { Checkbox, Divider, Grid, Header } from 'semantic-ui-react'
+import { Checkbox, Divider, Grid, Header, Message } from 'semantic-ui-react'
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from './Loading'
 import { selectTodos, createTodo, updateTodo, deleteTodo } from '../store/actions'
@@ -54,7 +54,7 @@ const TodoRow = ({idToken, todo, updateTodo, deleteTodo}: any) => {
   )
 }
 
-const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo}: any) => {
+const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo, error}: any) => {
   const { user, isLoading, getIdTokenClaims } = useAuth0()
   const [ idToken, setIdToken ] = useState('')
 
@@ -70,9 +70,12 @@ const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo}: any)
   return (
     <div>
       <Divider />
+      { // request rejection
+          error ? <Message negative>{error}</Message> : null
+      }
       <Grid padded>
         <UserRow idToken={idToken} user={user} createTodo={createTodo}/>
-        {
+        { // todo item list
           isLoading ? <Loading /> : todos.map((todo: Todo) => {
             return (
               <TodoRow key={todo.todoId}
@@ -90,7 +93,8 @@ const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo}: any)
 
 const mapStateToProps = (store: AppState) => {
   return {
-    todos: store.todos
+    todos: store.todos,
+    error: store.error
   };
 };
 

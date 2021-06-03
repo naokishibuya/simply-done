@@ -41,6 +41,7 @@ const TodoUpdate = ({ idToken, todo, updateTodo }: any) => {
                   value={name} 
                   onChange={e => setName(e.target.value)} 
                   size="big"
+                  autoFocus
                 />
               </Grid.Column>
             </Grid.Row>

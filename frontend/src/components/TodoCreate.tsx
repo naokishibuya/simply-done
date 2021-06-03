@@ -47,12 +47,13 @@ const TodoCreate = ({ idToken, createTodo }: any) => {
       <Modal.Content image>
         <Icon name="add" circular inverted color="green" size="huge"/>
         <Modal.Description>
-          <Input 
-            value={name} 
+          <Input
+            value={name}
             onChange={e => setName(e.target.value)}
             placeholder='Enter your todo here...'
             size="big"
-          />
+            autoFocus
+         />
         </Modal.Description>
     </Modal.Content>
     <Modal.Actions>

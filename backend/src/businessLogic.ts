@@ -35,5 +35,5 @@ export const getUploadUrl = async (userId: string, todoId: string) => {
   }
   const { signedUrl, attachmentUrl } = await s3.generateUploadUrl(userId, todoId)
   await todosDb.setAttachmentUrl(userId, todoId, attachmentUrl)
-  return signedUrl
+  return { signedUrl, attachmentUrl }
 }

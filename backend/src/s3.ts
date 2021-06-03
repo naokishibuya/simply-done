@@ -15,5 +15,5 @@ export const generateUploadUrl = async (userId: string, todoId: string) => {
   })
 
   console.log("Generated Presigned URL: ", signedUrl)
-  return { attachmentUrl, signedUrl }
+  return { signedUrl, attachmentUrl }
 }

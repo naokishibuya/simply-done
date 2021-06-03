@@ -4,6 +4,6 @@ import { getUploadUrl } from '../businessLogic'
 
 export const handler = cors(async (userId: string, event: APIGatewayProxyEvent) => {
   const todoId = event.pathParameters?.todoId || ''
-  const uploadUrl = await getUploadUrl(userId, todoId)
-  return { uploadUrl }
+  const { signedUrl, attachmentUrl } = await getUploadUrl(userId, todoId)
+  return { signedUrl, attachmentUrl }
 })

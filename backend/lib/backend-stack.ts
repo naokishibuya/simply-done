@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs'
 import * as apigateway from '@aws-cdk/aws-apigateway'
 import * as dynamodb from '@aws-cdk/aws-dynamodb'
+import * as s3 from '@aws-cdk/aws-s3'
 import todoRequest from '../models/todoRequest'
 
 export class BackendStack extends cdk.Stack {
@@ -21,6 +22,40 @@ export class BackendStack extends cdk.Stack {
       partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'todoId', type: dynamodb.AttributeType.STRING }
     })
+
+    // S3
+    const imagesS3Bucket = `todos-029013197347-${stage}`
+    const signedUrlExpiration = '300'
+
+    const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
+      versioned: false,
+      bucketName: imagesS3Bucket,
+      publicReadAccess: false,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      cors: [
+        {
+          allowedHeaders: ['*'],
+          allowedMethods: [
+            s3.HttpMethods.GET,
+            s3.HttpMethods.PUT,
+            s3.HttpMethods.POST,
+            s3.HttpMethods.DELETE,
+            s3.HttpMethods.HEAD
+          ],
+          allowedOrigins: ['*'],
+          maxAge: 3000
+        }
+      ]
+    })
+
+    const s3BucketPolicy = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['s3:GetObject'],
+      principals: [new iam.CanonicalUserPrincipal('*')],
+      resources: [s3Bucket.bucketArn + '/'],
+    })
+    s3Bucket.addToResourcePolicy(s3BucketPolicy)
 
     // Lambda
     const authorizer = new NodejsFunction(this, 'Autherizer', {
@@ -51,7 +86,7 @@ export class BackendStack extends cdk.Stack {
         TABLE_NAME: tableName
       }
     })
-    todosTable.grantReadData(getTodos);
+    todosTable.grantReadData(getTodos)
 
     const createTodo = new NodejsFunction(this, 'CreateTodo', {
       runtime: lambda.Runtime.NODEJS_14_X,
@@ -62,7 +97,7 @@ export class BackendStack extends cdk.Stack {
         TABLE_NAME: tableName
       }
     })
-    todosTable.grantReadWriteData(createTodo);
+    todosTable.grantReadWriteData(createTodo)
 
     const updateTodo = new NodejsFunction(this, 'UpdateTodo', {
       runtime: lambda.Runtime.NODEJS_14_X,
@@ -84,7 +119,21 @@ export class BackendStack extends cdk.Stack {
         TABLE_NAME: tableName
       }
     })
-    todosTable.grantReadWriteData(deleteTodo);
+    todosTable.grantReadWriteData(deleteTodo)
+
+    const getUploadUrl = new NodejsFunction(this, 'GetUploadUrl', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      entry: 'src/lambda/getUploadUrl.ts',
+      timeout: cdk.Duration.seconds(60),
+      environment: {
+        STAGE: stage,
+        TABLE_NAME: tableName,
+        IMAGES_S3_BUCKET: imagesS3Bucket,
+        SIGNED_URL_EXPIRATION: signedUrlExpiration
+      }
+    })
+    todosTable.grantReadWriteData(getUploadUrl)
+    s3Bucket.grantReadWrite(getUploadUrl)
 
     // API Gateway
     const todoApi = new apigateway.RestApi(this, 'TodoApi', {
@@ -141,6 +190,12 @@ export class BackendStack extends cdk.Stack {
     const todo = todos.addResource('{todoId}')
     todo.addMethod('OPTIONS', new apigateway.LambdaIntegration(corsOptions))
     todo.addMethod('DELETE', new apigateway.LambdaIntegration(deleteTodo), {
+      authorizer: requestAuthorizer
+    })
+
+    const attachmentUrl = todo.addResource('attachment')
+    attachmentUrl.addMethod('OPTIONS', new apigateway.LambdaIntegration(corsOptions))
+    attachmentUrl.addMethod('POST', new apigateway.LambdaIntegration(getUploadUrl), {
       authorizer: requestAuthorizer
     })
   }

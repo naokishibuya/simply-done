@@ -13,6 +13,7 @@ export const todosReducer: Reducer<Todo[], TodoAction> = (todos = [], action) =>
     case TodosActionTypes.CREATE:
       return [...todos, affected]
     case TodosActionTypes.UPDATE:
+    case TodosActionTypes.UPLOAD:
       return todos.map(todo => (todo.todoId === affected.todoId) ? affected : todo)
     case TodosActionTypes.DELETE:
       return todos.filter(todo => todo.todoId !== affected.todoId)
@@ -23,7 +24,6 @@ export const todosReducer: Reducer<Todo[], TodoAction> = (todos = [], action) =>
 
 export const errorReducer: Reducer<string, TodoAction> = (error = '', action) => {
   if (action.error) {
-    console.log('EEEEEE')
     return `${action.type} failed: ${action.error}`
   }
   return ''

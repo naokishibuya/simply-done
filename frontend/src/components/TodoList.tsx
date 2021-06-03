@@ -3,11 +3,12 @@ import { connect } from 'react-redux'
 import { Checkbox, Divider, Grid, Header, Message } from 'semantic-ui-react'
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from './Loading'
-import { selectTodos, createTodo, updateTodo, deleteTodo } from '../store/actions'
+import { selectTodos, createTodo, updateTodo, deleteTodo, uploadImage } from '../store/actions'
 import { Todo, AppState } from '../store/common'
 import TodoCreate from './TodoCreate'
 import TodoDelete from './TodoDelete'
 import TodoUpdate from './TodoUpdate'
+import TodoImage from './TodoImage'
 
 const UserRow = ({idToken, user, createTodo}: any) => {
   return (
@@ -25,7 +26,7 @@ const UserRow = ({idToken, user, createTodo}: any) => {
   )
 }
 
-const TodoRow = ({idToken, todo, updateTodo, deleteTodo}: any) => {
+const TodoRow = ({idToken, todo, updateTodo, deleteTodo, uploadImage}: any) => {
   return (
     <Grid.Row>
       <Grid.Column width={1} verticalAlign="middle">
@@ -42,10 +43,13 @@ const TodoRow = ({idToken, todo, updateTodo, deleteTodo}: any) => {
         {todo.dueDate}
       </Grid.Column>
       <Grid.Column width={1} floated="right">
-        <TodoUpdate todo={todo} idToken={idToken} updateTodo={updateTodo} />
+        <TodoUpdate idToken={idToken} todo={todo} updateTodo={updateTodo} />
       </Grid.Column>
       <Grid.Column width={1} floated="right">
-        <TodoDelete todo={todo} idToken={idToken} deleteTodo={deleteTodo} />
+        <TodoImage idToken={idToken} todo={todo} uploadImage={uploadImage} />
+      </Grid.Column>
+      <Grid.Column width={1} floated="right">
+        <TodoDelete idToken={idToken} todo={todo} deleteTodo={deleteTodo} />
       </Grid.Column>
       <Grid.Column width={16}>
         <Divider />
@@ -54,7 +58,7 @@ const TodoRow = ({idToken, todo, updateTodo, deleteTodo}: any) => {
   )
 }
 
-const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo, error}: any) => {
+const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo, uploadImage, error}: any) => {
   const { user, isLoading, getIdTokenClaims } = useAuth0()
   const [ idToken, setIdToken ] = useState('')
 
@@ -82,7 +86,8 @@ const TodoList = ({todos, selectTodos, createTodo, updateTodo, deleteTodo, error
                 idToken={idToken}
                 todo={todo}
                 updateTodo={updateTodo}
-                deleteTodo={deleteTodo} />
+                deleteTodo={deleteTodo}
+                uploadImage={uploadImage} />
             )
           })
         }
@@ -104,7 +109,8 @@ export default withAuthenticationRequired(
       selectTodos,
       createTodo,
       updateTodo,
-      deleteTodo
+      deleteTodo,
+      uploadImage
     }
   )(TodoList)
 )

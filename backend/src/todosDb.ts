@@ -54,9 +54,28 @@ export const updateTodo = async (userId: string, todo: TodoItem) => {
   return updated.Attributes as TodoItem
 }
 
+export const exists = async (userId: string, todoId: string) => {
+  const result = await docClient.get({
+    TableName: TABLE_NAME,
+    Key: { userId, todoId }
+  }).promise()
+  return !!result.Item
+}
+
 export const deleteTodo = async (userId: string, todoId: string) => {
   await docClient.delete({
     TableName: TABLE_NAME,
     Key: { userId, todoId }
+  }).promise()
+}
+
+export const setAttachmentUrl = async (userId: string, todoId: string, attachmentUrl: string) => {
+  await docClient.update({
+    TableName: TABLE_NAME,
+    Key: { userId, todoId },
+    UpdateExpression: "set attachmentUrl = :url",
+    ExpressionAttributeValues: {
+      ":url": attachmentUrl
+    }
   }).promise()
 }

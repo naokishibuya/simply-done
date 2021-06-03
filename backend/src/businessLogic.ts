@@ -1,4 +1,5 @@
 import * as todosDb from './todosDb'
+import * as s3 from './s3'
 
 export interface TodoItem {
   todoId: string
@@ -26,4 +27,13 @@ export const updateTodo = async (userId: string, todo: TodoItem) => {
 
 export const deleteTodo = async (userId: string, todoId: string) => {
   await todosDb.deleteTodo(userId, todoId)
+}
+
+export const getUploadUrl = async (userId: string, todoId: string) => {
+  if (!todosDb.exists(userId, todoId)) {
+    throw new Error(`No such todo item exists: UserID=${userId} TodoID=${todoId}`)
+  }
+  const { signedUrl, attachmentUrl } = await s3.generateUploadUrl(userId, todoId)
+  await todosDb.setAttachmentUrl(userId, todoId, attachmentUrl)
+  return signedUrl
 }

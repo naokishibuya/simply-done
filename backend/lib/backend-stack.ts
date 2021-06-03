@@ -20,7 +20,8 @@ export class BackendStack extends cdk.Stack {
       tableName: tableName,
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
-      sortKey: { name: 'todoId', type: dynamodb.AttributeType.STRING }
+      sortKey: { name: 'todoId', type: dynamodb.AttributeType.STRING },
+      removalPolicy: cdk.RemovalPolicy.DESTROY // TODO while testing
     })
 
     // S3
@@ -31,8 +32,8 @@ export class BackendStack extends cdk.Stack {
       versioned: false,
       bucketName: imagesS3Bucket,
       publicReadAccess: false,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      //blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY, // TODO while testing
       cors: [
         {
           allowedHeaders: ['*'],
@@ -53,7 +54,7 @@ export class BackendStack extends cdk.Stack {
       effect: iam.Effect.ALLOW,
       actions: ['s3:GetObject'],
       principals: [new iam.CanonicalUserPrincipal('*')],
-      resources: [s3Bucket.bucketArn + '/'],
+      resources: [s3Bucket.bucketArn + '/*'],
     })
     s3Bucket.addToResourcePolicy(s3BucketPolicy)
 

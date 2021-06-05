@@ -13,6 +13,7 @@ export class BackendStack extends cdk.Stack {
 
     // The code that defines your stack goes here
     const stage = process.env.STAGE || 'local';
+    const bucketName = process.env.BUCKET_NAME || 'MUST-BE-GLOBALLY-UNIQUE'
 
     // DynamoDB Table
     const tableName = `TodosTable-${stage}`
@@ -25,12 +26,10 @@ export class BackendStack extends cdk.Stack {
     })
 
     // S3
-    const imagesS3Bucket = `todos-029013197347-${stage}`
     const signedUrlExpiration = '300'
-
     const s3Bucket = new s3.Bucket(this, 'S3Bucket', {
       versioned: false,
-      bucketName: imagesS3Bucket,
+      bucketName: bucketName,
       publicReadAccess: false,
       //blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // TODO while testing
@@ -129,7 +128,7 @@ export class BackendStack extends cdk.Stack {
       environment: {
         STAGE: stage,
         TABLE_NAME: tableName,
-        IMAGES_S3_BUCKET: imagesS3Bucket,
+        IMAGES_S3_BUCKET: bucketName,
         SIGNED_URL_EXPIRATION: signedUrlExpiration
       }
     })

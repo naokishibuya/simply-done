@@ -20,11 +20,11 @@ npm start
 
 Then, login with **Auth0** to provide your identity.
 
-![](images/login.png)
+<img src="images/login.png" width="200px"/>
 
 Create a user with an email and a password or login with Google account.
 
-![](images/auth0.png)
+<img src="images/auth0.png" width="220px"/>
 
 A user can create a new task by clikcing the **Add Task** button.
 
@@ -38,15 +38,15 @@ You can logout by using the **Login** menu item.
 
 Click the **Add Task** button to create a new task.
 
-![](images/new_task.png)
+<img src="images/new_task.png" width="450px"/>
 
 Simply fill in the task details, and press the **Add** button.
 
-![](images/add_task.png)
+<img src="images/add_task.png" width="400px"/>
 
 The new task will be stored in AWS DynamoDB table and reflected in the web application.
 
-![](images/task_list.png)
+<img src="images/task_list.png" width="450px"/>
 
 You can add as many tasks as you need.
 
@@ -58,29 +58,29 @@ You can mark the task completion by clicking the checkbox on the left.
 
 Click the pencil button for the task item to edit it.
 
-![](images/buttons.png)
+<img src="images/buttons.png" width="150px"/>
 
 Update the task details and press the **Update** button.
 
-![](images/edit_task.png)
+<img src="images/edit_task.png" width="400px"/>
 
 ### Upload an image
 
 Upload an image for a task by pressing the upload button (the middle red button next to the pencil button).
 
-![](images/upload_image.png)
+<img src="images/upload_image.png" width="400px"/>
 
 Choose an image file and press the **Upload** button.
 
 The image will be uploaded to the user specific AWS S3 bucket securely using a pre-signed url.
 
-![](images/uploaded_image.png)
+<img src="images/uploaded_image.png" width="450px"/>
 
 ### Delete a task
 
 You can delete a task by clicking the **X** button and confirm the deletion.
 
-![](images/delete_task.png)
+<img src="images/delete_task.png" width="400px"/>
 
 ### Implementation
 
@@ -115,7 +115,7 @@ All those codes make use of `async/await` or `Promise` features for better perfo
 
 A DynamoDB table is used to persist task items.
 
-![](images/dynamodb.png)
+<img src="images/dynamodb.png" width="500px"/>
 
 The `userId` is the partition key and the `taskId` is the sort key (items are fetched using the query method).
 
@@ -133,15 +133,15 @@ Also, associating IAM roles and permissions to each function is pretty straight 
 
 AWS X-Ray is enabled so that it is easy to find out where an error has occurred.
 
-![](images/x-ray.png)
+<img src="images/x-ray.png" width="600px"/>
 
 ### Logging
 
 AWS CloudWatch Log is another way to troubleshoot the backend logic.
 
-![](images/cloud_watch_logs.png)
+<img src="images/cloud_watch_logs.png" width="300px"/>
 
-![](images/log_details.png)
+<img src="images/log_details.png" width="500px"/>
 
 
 
